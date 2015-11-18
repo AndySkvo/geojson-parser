@@ -3,13 +3,13 @@ package ru.andyskvo;
 /**
  * Created by Skvorcov on 17.11.2015.
  */
-public class Country {
+public class Town {
     private int id;
     private double latitude;
     private double longitude;
     private String name;
 
-    public Country(int id, double latitude, double longitude, String country, String region, String name) {
+    public Town(int id, double latitude, double longitude, String country, String region, String name) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
