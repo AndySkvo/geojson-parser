@@ -52,6 +52,7 @@ public class Main {
     public static String getFileName() {
         String fileName = "";
         try {
+            System.out.println("Enter geojson file name");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
             fileName = bufferedReader.readLine();
             bufferedReader.close();
@@ -116,8 +117,13 @@ public class Main {
 
         //get name, region and country
         JSONObject jsonPropertiesObj = (JSONObject) featuresInner.get("properties");
-        String name = (String) jsonPropertiesObj.get("name");
+        String nameRu = (String) jsonPropertiesObj.get("name:ru");
+        String nameEn = (String) jsonPropertiesObj.get("name:en");
+        String nameUk = (String) jsonPropertiesObj.get("name:uk");
+        String nameBe = (String) jsonPropertiesObj.get("name:be");
 
-        return new Town(id, latitude, longitude, name);
+
+
+        return new Town(id, latitude, longitude, nameRu, nameEn, nameUk, nameBe);
     }
 }
