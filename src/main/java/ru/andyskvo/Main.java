@@ -12,36 +12,34 @@ import java.util.List;
 
 public class Main {
     //list for no valid nodes
-    private static List<Long> blackIdList = new ArrayList<Long>();
+    private static List<Long> blackIdList = new ArrayList<>();
 
     static {
         blackIdList.add(3816414884L);
         blackIdList.add(3805728883L);
-        blackIdList.add(27025689L);
         blackIdList.add(27072632L);
-        blackIdList.add(27017589L);
         blackIdList.add(1249401878L);
         blackIdList.add(3768691783L);
     }
 
     public static void main(String[] args) {
-        String fileName = getFileName();
         try {
+            String fileName = getFileName();
+
             JSONObject jsonFileObject = getJsonFileObject(fileName);
 
             JSONArray jsonFeaturesArray = (JSONArray) jsonFileObject.get("features");
             Iterator featuresIterator = jsonFeaturesArray.iterator();
 
-            DataBase.Connect();
+            DataBase.connect();
 
             while (featuresIterator.hasNext()) {
                 Town currentTown = getTown(featuresIterator);
-                int kp = getKp(currentTown.getLatitude());
-                if (kp != 0 && !blackIdList.contains(currentTown.getId())) {
-                    DataBase.insertTown(currentTown, kp);
+                if (!blackIdList.contains(currentTown.getId())) {
+                    DataBase.insertTown(currentTown);
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -49,57 +47,28 @@ public class Main {
     /**
      * @return geojson file name
      */
-    public static String getFileName() {
+    public static String getFileName() throws IOException{
         String fileName = "";
-        try {
-            System.out.println("Enter geojson file name");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-            fileName = bufferedReader.readLine();
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        System.out.println("Enter geojson file name");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        fileName = bufferedReader.readLine();
+        bufferedReader.close();
+
         return fileName;
     }
 
-    private static JSONObject getJsonFileObject(String fileName) {
+    private static JSONObject getJsonFileObject(String fileName) throws IOException {
         JSONObject jsonObject = null;
         try {
             FileReader fileReader = new FileReader(fileName);
             JSONParser jsonParser = new JSONParser();
             jsonObject = (JSONObject) jsonParser.parse(fileReader);
             fileReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return jsonObject;
-    }
-
-    /**
-     *  The calculation of the coefficient in longitude
-     * @param latitude
-     * @return kp index of solar activity
-     */
-    private static int getKp(double latitude) {
-        int kp = 0;
-        if (latitude  >= 70) {
-            kp = 1;
-        }
-        else if (latitude < 70 && latitude >= 60) {
-            kp = 3;
-        }
-        else if (latitude < 60 && latitude >= 57){
-            kp = 5;
-        }
-        else if (latitude < 57 && latitude >= 54) {
-            kp = 7;
-        }
-        else if (latitude < 54 && latitude >= 42) {
-            kp = 9;
-        }
-        return kp;
     }
 
     private static Town getTown(Iterator featuresIterator) {
@@ -121,8 +90,6 @@ public class Main {
         String nameEn = (String) jsonPropertiesObj.get("name:en");
         String nameUk = (String) jsonPropertiesObj.get("name:uk");
         String nameBe = (String) jsonPropertiesObj.get("name:be");
-
-
 
         return new Town(id, latitude, longitude, nameRu, nameEn, nameUk, nameBe);
     }
